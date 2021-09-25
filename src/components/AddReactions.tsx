@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { Reaction } from '../typings';
+import { reactions } from '../__mock__/mock';
 import { Flex } from './Layout';
 
 const ReactionsEmojisContainer = styled(Flex)`
@@ -13,6 +15,11 @@ const ReactionsEmojisContainer = styled(Flex)`
 
     .emoji-container {
         position: relative;
+        margin-right: 10px;
+
+        &:last-child {
+            margin: 0px;
+        }
 
         &:hover {
             button {
@@ -87,10 +94,10 @@ type ReactionsEmojisProps = {
 
 const ReactionsEmojis = ({ onReact }: ReactionsEmojisProps) => {
     return (
-        <ReactionsEmojisContainer bg="white" width="118px" p={[6, 21]} justify="space-between">
-            <ReactionEmoji onReact={() => onReact('👍')} emoji="👍" title="Like" />
-            <ReactionEmoji onReact={() => onReact('❤️')} emoji="❤️" title="Love" />
-            <ReactionEmoji onReact={() => onReact('👏')} emoji="👏" title="Appreciate" />
+        <ReactionsEmojisContainer bg="white" p={[6, 21]} justify="space-between">
+            {reactions.map(({ emoji, id, name }: Reaction) => (
+                <ReactionEmoji key={id} onReact={() => onReact(emoji)} emoji={emoji} title={name} />
+            ))}
         </ReactionsEmojisContainer>
     );
 };

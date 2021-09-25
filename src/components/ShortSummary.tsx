@@ -1,8 +1,9 @@
 import { VFC } from 'react';
 import styled from 'styled-components';
+import { ReactionCount } from '../typings';
 import { Flex } from './Layout';
 
-const ReactionCount = styled(Flex)`
+const Container = styled(Flex)`
     .emoji {
         font-size: 12px;
     }
@@ -38,12 +39,12 @@ type EmojiAndCountProps = {
 
 export const EmojiAndCount: VFC<EmojiAndCountProps> = ({ count, emoji, variant = '' }) => {
     return (
-        <ReactionCount alignItems="center" className={variant}>
+        <Container alignItems="center" className={variant}>
             <span className="emoji">{emoji}</span>
             <Flex alignItems="center" className="count">
                 {count}
             </Flex>
-        </ReactionCount>
+        </Container>
     );
 };
 
@@ -58,28 +59,21 @@ const ShortSummaryContainer = styled(Flex)`
 `;
 
 type ShortSummaryProps = {
-    onShortSummaryClick(): void;
+    onShortSummaryClick(reactionId: string): void;
+    reactionCount: ReactionCount[];
 };
 
-const ShortSummary: VFC<ShortSummaryProps> = ({ onShortSummaryClick }) => {
+const ShortSummary: VFC<ShortSummaryProps> = ({ onShortSummaryClick, reactionCount }) => {
     return (
         <>
-            <ShortSummaryContainer className="active" p={[5, 8]} m={[0, 6, 0, 0]} bg="#F4F4F4">
-                {/* Adding button to support the basic accessibility */}
-                <button onClick={() => onShortSummaryClick()}>
-                    <EmojiAndCount emoji="❤️" count={13} />
-                </button>
-            </ShortSummaryContainer>
-            <ShortSummaryContainer p={[5, 8]} m={[0, 6, 0, 0]} bg="#F4F4F4">
-                <button onClick={() => onShortSummaryClick()}>
-                    <EmojiAndCount emoji="👏" count={123} />
-                </button>
-            </ShortSummaryContainer>
-            <ShortSummaryContainer p={[5, 8]} m={[0, 6, 0, 0]} bg="#F4F4F4">
-                <button onClick={() => onShortSummaryClick()}>
-                    <EmojiAndCount emoji="👍" count={7} />
-                </button>
-            </ShortSummaryContainer>
+            {reactionCount.map(({ count, emoji, reactionId }) => (
+                <ShortSummaryContainer key={reactionId} p={[5, 8]} m={[0, 6, 0, 0]} bg="#F4F4F4">
+                    {/* Adding button to support the basic accessibility */}
+                    <button onClick={() => onShortSummaryClick(reactionId)}>
+                        <EmojiAndCount emoji={emoji} count={count} />
+                    </button>
+                </ShortSummaryContainer>
+            ))}
         </>
     );
 };

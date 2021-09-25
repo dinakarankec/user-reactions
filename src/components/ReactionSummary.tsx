@@ -1,5 +1,6 @@
 import { useState, VFC } from 'react';
 import styled from 'styled-components';
+import { ReactionCount, UserContentReactionExt } from '../typings';
 import { Flex } from './Layout';
 import { EmojiAndCount } from './ShortSummary';
 
@@ -43,8 +44,9 @@ const ReactionInfoItem: VFC<ReactionInfoItemProps> = ({ url, emoji, username }) 
 
 const Container = styled(Flex)`
     position: absolute;
-    left: -420px;
+    left: -20px;
     bottom: -150px;
+    transform: translateX(-100%);
 
     .title {
         font-weight: 600;
@@ -56,7 +58,7 @@ const Container = styled(Flex)`
         button {
             flex: 1;
             border-bottom: 2px solid #e0e0e0;
-            padding: 0px 0px 9px 16px;
+            padding: 0px 16px 9px 16px;
             text-align: left;
             margin-right: 2px;
 
@@ -81,10 +83,26 @@ const Container = styled(Flex)`
     }
 `;
 
-const ReactionSummary = () => {
-    const [activeTab, setActiveTab] = useState('all');
+type ReactionSummaryProps = {
+    userContentReactionsExts: UserContentReactionExt[];
+    reactionCount: ReactionCount[];
+    groupedByReaction: { [key: string]: UserContentReactionExt[] };
+    initialActiveTab: string;
+};
+
+const ReactionSummary: React.VFC<ReactionSummaryProps> = ({
+    userContentReactionsExts,
+    reactionCount,
+    groupedByReaction,
+    initialActiveTab,
+}) => {
+    const [activeTab, setActiveTab] = useState(initialActiveTab);
+
+    const contentReactions =
+        activeTab === 'all' ? userContentReactionsExts : groupedByReaction[activeTab];
+
     return (
-        <Container direction="column" width="400px" height="300px" bg="#ffffff">
+        <Container direction="column" height="300px" bg="#ffffff">
             <Flex m={[0, 0, 16, 0]} direction="column">
                 <Flex p={[16]} className="title">
                     Reactions
@@ -96,72 +114,26 @@ const ReactionSummary = () => {
                     >
                         All
                     </button>
-                    <button
-                        className={activeTab === '❤️' ? 'active' : ''}
-                        onClick={() => setActiveTab('❤️')}
-                    >
-                        <EmojiAndCount variant="large" emoji="❤️" count={13} />
-                    </button>
-                    <button
-                        className={activeTab === '👏' ? 'active' : ''}
-                        onClick={() => setActiveTab('👏')}
-                    >
-                        <EmojiAndCount variant="large" emoji="👏" count={123} />
-                    </button>
-                    <button
-                        className={activeTab === '👍' ? 'active' : ''}
-                        onClick={() => setActiveTab('👍')}
-                    >
-                        <EmojiAndCount variant="large" emoji="👍" count={7} />
-                    </button>
+                    {reactionCount.map(({ reactionId, emoji, count }) => (
+                        <button
+                            key={reactionId}
+                            className={reactionId === activeTab ? 'active' : ''}
+                            onClick={() => setActiveTab(reactionId)}
+                        >
+                            <EmojiAndCount variant="large" emoji={emoji} count={count} />
+                        </button>
+                    ))}
                 </Flex>
             </Flex>
             <Flex direction="column" height="calc(100% - 100px)" className="reactions">
-                <ReactionInfoItem
-                    url="https://i.pravatar.cc/20"
-                    username="Aeslie Alexander"
-                    emoji="👏"
-                />
-                <ReactionInfoItem
-                    url="https://i.pravatar.cc/20"
-                    username="Aeslie Alexander"
-                    emoji="❤️"
-                />
-                <ReactionInfoItem
-                    url="https://i.pravatar.cc/20"
-                    username="Aeslie Alexander"
-                    emoji="👍"
-                />
-                <ReactionInfoItem
-                    url="https://i.pravatar.cc/20"
-                    username="Aeslie Alexander"
-                    emoji="👏"
-                />
-                <ReactionInfoItem
-                    url="https://i.pravatar.cc/20"
-                    username="Aeslie Alexander"
-                    emoji="❤️"
-                />
-                <ReactionInfoItem
-                    url="https://i.pravatar.cc/20"
-                    username="Aeslie Alexander"
-                    emoji="👍"
-                />
-                <ReactionInfoItem
-                    url="https://i.pravatar.cc/20"
-                    username="Aeslie Alexander"
-                    emoji="👏"
-                />
-                <ReactionInfoItem
-                    url="https://i.pravatar.cc/20"
-                    username="Aeslie Alexander"
-                    emoji="❤️"
-                />
-                <ReactionInfoItem
-                    url="https://i.pravatar.cc/20"
-                    username="Aeslie Alexander"
-                    emoji="👍"
-                />
+                {contentReactions.map(({ id, user, reaction }: UserContentReactionExt) => (
+                    <ReactionInfoItem
+                        key={id}
+                        url={user.avatar}
+                        username={`${user.firstName} ${user.lastName}`}
+                        emoji={reaction.emoji}
+                    />
+                ))}
             </Flex>
         </Container>
     );
