@@ -1,15 +1,23 @@
-import { VFC } from 'react';
+import { useState, VFC } from 'react';
+import styled from 'styled-components';
 import AddReaction from './AddReactions';
 import { Flex } from './Layout';
+import ReactionSummary from './ReactionSummary';
 import ShortSummary from './ShortSummary';
 
-const ContentReactions: VFC = () => {
+const PostActionsContainer = styled(Flex)`
+    position: relative;
+`;
+
+const PostActions: VFC = () => {
+    const [showSummary, toggleSummary] = useState(false);
     return (
-        <Flex>
-            <ShortSummary />
+        <PostActionsContainer>
+            <ShortSummary onShortSummaryClick={() => toggleSummary(!showSummary)} />
             <AddReaction />
-        </Flex>
+            {showSummary && <ReactionSummary />}
+        </PostActionsContainer>
     );
 };
 
-export default ContentReactions;
+export default PostActions;

@@ -21,16 +21,24 @@ const ReactionCount = styled(Flex)`
             display: inline-block;
         }
     }
+
+    &.large {
+        .emoji,
+        .count {
+            font-size: 14px;
+        }
+    }
 `;
 
 type EmojiAndCountProps = {
     count: number;
     emoji: string;
+    variant?: 'large';
 };
 
-const EmojiAndCount: VFC<EmojiAndCountProps> = ({ count, emoji }) => {
+export const EmojiAndCount: VFC<EmojiAndCountProps> = ({ count, emoji, variant = '' }) => {
     return (
-        <ReactionCount alignItems="center">
+        <ReactionCount alignItems="center" className={variant}>
             <span className="emoji">{emoji}</span>
             <Flex alignItems="center" className="count">
                 {count}
@@ -49,17 +57,28 @@ const ShortSummaryContainer = styled(Flex)`
     }
 `;
 
-const ShortSummary: VFC = () => {
+type ShortSummaryProps = {
+    onShortSummaryClick(): void;
+};
+
+const ShortSummary: VFC<ShortSummaryProps> = ({ onShortSummaryClick }) => {
     return (
         <>
             <ShortSummaryContainer className="active" p={[5, 8]} m={[0, 6, 0, 0]} bg="#F4F4F4">
-                <EmojiAndCount emoji="❤️" count={13} />
+                {/* Adding button to support the basic accessibility */}
+                <button onClick={() => onShortSummaryClick()}>
+                    <EmojiAndCount emoji="❤️" count={13} />
+                </button>
             </ShortSummaryContainer>
             <ShortSummaryContainer p={[5, 8]} m={[0, 6, 0, 0]} bg="#F4F4F4">
-                <EmojiAndCount emoji="👏" count={123} />
+                <button onClick={() => onShortSummaryClick()}>
+                    <EmojiAndCount emoji="👏" count={123} />
+                </button>
             </ShortSummaryContainer>
             <ShortSummaryContainer p={[5, 8]} m={[0, 6, 0, 0]} bg="#F4F4F4">
-                <EmojiAndCount emoji="👍" count={7} />
+                <button onClick={() => onShortSummaryClick()}>
+                    <EmojiAndCount emoji="👍" count={7} />
+                </button>
             </ShortSummaryContainer>
         </>
     );

@@ -24,14 +24,17 @@ const ReactionsEmojisContainer = styled(Flex)`
 
     button {
         padding: 0;
-        background: transparent;
-        border: 0;
         transition: 0.1s ease-in;
 
         .emoji {
             font-size: 14px;
-            cursor: pointer;
             font-weight: 700;
+        }
+
+        &:focus-visible {
+            transform: scale(3);
+            transform-origin: 33% 88%;
+            outline: none;
         }
     }
 
@@ -66,7 +69,12 @@ const ReactionEmoji = ({ emoji, title, onReact }: ReactionEmojiProps) => {
                     <span className="title">{title}</span>
                 </span>
             )}
-            <button onClick={() => onReact()}>
+            <button
+                onClick={() => onReact()}
+                // Which enables when tooltip when we operate with keyboard
+                onFocus={() => toggleTitle(true)}
+                onBlur={() => toggleTitle(false)}
+            >
                 <span className="emoji">{emoji}</span>
             </button>
         </div>
@@ -95,7 +103,6 @@ const Container = styled.div`
         background: #edeef0;
         border: 1px solid #ffffff;
         border-radius: 50%;
-        cursor: pointer;
 
         .icon-add-emoji {
             font-size: 15px;

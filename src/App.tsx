@@ -1,10 +1,10 @@
 import AddReaction from './components/AddReactions';
-import ContentReactions from './components/ContentReactions';
+import PostActions from './components/ContentReactions';
 
 function App() {
     return (
         <div>
-            <ContentReactions />
+            <PostActions />
         </div>
     );
 }
