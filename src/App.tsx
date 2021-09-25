@@ -1,6 +1,10 @@
+import AddReaction from './components/Reaction'
+
 function App() {
   return (
-    <div></div>
+    <div>
+      <AddReaction />
+    </div>
   );
 }
 
