@@ -1,6 +1,7 @@
 import { useEffect, useState, VFC } from 'react';
 import styled from 'styled-components';
 import { ReactionCount, UserContentReactionExt } from '../typings';
+import { getURLParams } from '../utils/common';
 import { Flex } from './Layout';
 import { EmojiAndCount } from './ShortSummary';
 
@@ -109,6 +110,8 @@ const ReactionSummary: React.VFC<ReactionSummaryProps> = ({
     const contentReactions =
         activeTab === 'all' ? userContentReactionsExts : groupedByReaction[activeTab] || [];
 
+    const userId = getURLParams('user_id');
+
     return (
         <Container direction="column" height="300px" bg="#ffffff">
             <Flex m={[0, 0, 16, 0]} direction="column">
@@ -137,12 +140,13 @@ const ReactionSummary: React.VFC<ReactionSummaryProps> = ({
             </Flex>
             <Flex direction="column" height="calc(100% - 100px)" className="reactions">
                 {contentReactions.map(({ id, user, reaction }: UserContentReactionExt) => {
-                    console.log('user, reaction, id', user, reaction, id);
                     return (
                         <ReactionInfoItem
                             key={id}
                             url={user.avatar}
-                            username={`${user.firstName} ${user.lastName}`}
+                            username={
+                                userId === user.id ? 'You' : `${user.firstName} ${user.lastName}`
+                            }
                             emoji={reaction.emoji}
                         />
                     );
