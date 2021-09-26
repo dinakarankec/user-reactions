@@ -1,42 +1,19 @@
-import groupBy from 'lodash.groupby';
-import { useMemo, useState, VFC } from 'react';
+import { useEffect, useMemo, useState, VFC } from 'react';
 import styled from 'styled-components';
-import {
-    ObjectById,
-    Reaction,
-    User,
-    UserContentReaction,
-    UserContentReactionExt,
-} from '../typings';
+import { ObjectById, Reaction, UserContentReactionExt } from '../typings';
 import AddReaction from './AddReactions';
 import { Flex } from './Layout';
 import ReactionSummary from './ReactionSummary';
 import ShortSummary from './ShortSummary';
-import { userContentReactions } from '../__mock__/mock';
 
 const PostActionsContainer = styled(Flex)`
     position: relative;
 `;
 
-const constructUserContentReaction = (
-    reactionsById: ObjectById<Reaction>,
-    userContentReactions: UserContentReaction[],
-    usersbyId: ObjectById<User>,
-) => {
-    return userContentReactions.map(
-        (userContentReaction): UserContentReactionExt => ({
-            ...userContentReaction,
-            user: usersbyId[userContentReaction.userId],
-            reaction: reactionsById[userContentReaction.reactionId],
-        }),
-    );
-};
-
 const prepareDataAndTab = (
-    userContentReactionsExt: UserContentReactionExt[],
+    groupedByReaction: ObjectById<UserContentReactionExt[]>,
     reactionsById: ObjectById<Reaction>,
 ) => {
-    const groupedByReaction = groupBy(userContentReactionsExt, 'reactionId');
     const reactionCount = Object.keys(groupedByReaction).map((reactionId: string) => {
         const { emoji } = reactionsById[reactionId];
         return {
@@ -45,39 +22,46 @@ const prepareDataAndTab = (
             count: groupedByReaction[reactionId].length,
         };
     });
-    return {
-        reactionCount,
-        groupedByReaction,
-        userContentReactionsExt,
-    };
+    return reactionCount;
 };
 
 type PostActionsProps = {
     reactionsById: ObjectById<Reaction>;
-    usersById: ObjectById<User>;
+    userContentReactionsExt: UserContentReactionExt[];
+    groupedByReaction: ObjectById<UserContentReactionExt[]>;
+    userReactionId: number;
+    onReaction(reactionId: number): void;
 };
 
-const PostActions: VFC<PostActionsProps> = ({ reactionsById, usersById }) => {
+const PostActions: VFC<PostActionsProps> = ({
+    reactionsById,
+    userContentReactionsExt,
+    groupedByReaction,
+    userReactionId,
+    onReaction,
+}) => {
     const [showSummary, toggleSummary] = useState('');
 
-    const { groupedByReaction, reactionCount, userContentReactionsExt } = useMemo(() => {
-        const userContentReactionsExt = constructUserContentReaction(
-            reactionsById,
-            userContentReactions,
-            usersById,
-        );
-        return prepareDataAndTab(userContentReactionsExt, reactionsById);
-    }, [reactionsById, usersById]);
+    useEffect(() => {
+        if (userContentReactionsExt.length === 0) {
+            toggleSummary('');
+        }
+    }, [userContentReactionsExt]);
+
+    const reactionCount = useMemo(() => {
+        return prepareDataAndTab(groupedByReaction, reactionsById);
+    }, [reactionsById, groupedByReaction]);
 
     return (
         <PostActionsContainer>
             <ShortSummary
+                userReactionId={userReactionId}
                 reactionCount={reactionCount}
                 onShortSummaryClick={(reactionId: string) =>
                     toggleSummary(showSummary ? '' : reactionId)
                 }
             />
-            <AddReaction />
+            <AddReaction onReaction={onReaction} />
             {showSummary && (
                 <ReactionSummary
                     initialActiveTab={showSummary}

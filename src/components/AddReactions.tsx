@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, VFC } from 'react';
 import styled from 'styled-components';
 import { useMasterData } from '../contexts/master-data';
 import { Reaction } from '../typings';
@@ -89,7 +89,7 @@ const ReactionEmoji = ({ emoji, title, onReact }: ReactionEmojiProps) => {
 };
 
 type ReactionsEmojisProps = {
-    onReact(emoji: string): void;
+    onReact(emoji: number): void;
 };
 
 const ReactionsEmojis = ({ onReact }: ReactionsEmojisProps) => {
@@ -97,7 +97,7 @@ const ReactionsEmojis = ({ onReact }: ReactionsEmojisProps) => {
     return (
         <ReactionsEmojisContainer bg="white" p={[6, 21]} justify="space-between">
             {reactions.map(({ emoji, id, name }: Reaction) => (
-                <ReactionEmoji key={id} onReact={() => onReact(emoji)} emoji={emoji} title={name} />
+                <ReactionEmoji key={id} onReact={() => onReact(id)} emoji={emoji} title={name} />
             ))}
         </ReactionsEmojisContainer>
     );
@@ -119,10 +119,10 @@ const Container = styled.div`
 `;
 
 type AddReactionProps = {
-    onReaction(emoji: string): void;
+    onReaction(reactionId: number): void;
 };
 
-const AddReaction = () => {
+const AddReaction: VFC<AddReactionProps> = ({ onReaction }) => {
     const [showEmojis, toggleEmojis] = useState(false);
 
     return (
@@ -134,8 +134,9 @@ const AddReaction = () => {
             </button>
             {showEmojis && (
                 <ReactionsEmojis
-                    onReact={(emoji: string) => {
+                    onReact={(reactionId: number) => {
                         toggleEmojis(false);
+                        onReaction(reactionId);
                     }}
                 />
             )}

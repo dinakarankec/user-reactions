@@ -1,4 +1,4 @@
-import { useState, VFC } from 'react';
+import { useEffect, useState, VFC } from 'react';
 import styled from 'styled-components';
 import { ReactionCount, UserContentReactionExt } from '../typings';
 import { Flex } from './Layout';
@@ -47,6 +47,7 @@ const Container = styled(Flex)`
     left: -20px;
     bottom: -150px;
     transform: translateX(-100%);
+    min-width: 250px;
 
     .title {
         font-weight: 600;
@@ -98,8 +99,15 @@ const ReactionSummary: React.VFC<ReactionSummaryProps> = ({
 }) => {
     const [activeTab, setActiveTab] = useState(initialActiveTab);
 
+    useEffect(() => {
+        const keys = Object.keys(groupedByReaction);
+        if (!(activeTab in groupedByReaction) && keys.length > 0 && activeTab !== 'all') {
+            setActiveTab(keys[0]);
+        }
+    }, [groupedByReaction, activeTab]);
+
     const contentReactions =
-        activeTab === 'all' ? userContentReactionsExts : groupedByReaction[activeTab];
+        activeTab === 'all' ? userContentReactionsExts : groupedByReaction[activeTab] || [];
 
     return (
         <Container direction="column" height="300px" bg="#ffffff">
@@ -108,12 +116,14 @@ const ReactionSummary: React.VFC<ReactionSummaryProps> = ({
                     Reactions
                 </Flex>
                 <Flex className="tabs" justify="stretch" width="100%">
-                    <button
-                        onClick={() => setActiveTab('all')}
-                        className={`all ${activeTab === 'all' ? 'active' : ''}`}
-                    >
-                        All
-                    </button>
+                    {reactionCount.length > 1 && (
+                        <button
+                            onClick={() => setActiveTab('all')}
+                            className={`all ${activeTab === 'all' ? 'active' : ''}`}
+                        >
+                            All
+                        </button>
+                    )}
                     {reactionCount.map(({ reactionId, emoji, count }) => (
                         <button
                             key={reactionId}
@@ -126,14 +136,17 @@ const ReactionSummary: React.VFC<ReactionSummaryProps> = ({
                 </Flex>
             </Flex>
             <Flex direction="column" height="calc(100% - 100px)" className="reactions">
-                {contentReactions.map(({ id, user, reaction }: UserContentReactionExt) => (
-                    <ReactionInfoItem
-                        key={id}
-                        url={user.avatar}
-                        username={`${user.firstName} ${user.lastName}`}
-                        emoji={reaction.emoji}
-                    />
-                ))}
+                {contentReactions.map(({ id, user, reaction }: UserContentReactionExt) => {
+                    console.log('user, reaction, id', user, reaction, id);
+                    return (
+                        <ReactionInfoItem
+                            key={id}
+                            url={user.avatar}
+                            username={`${user.firstName} ${user.lastName}`}
+                            emoji={reaction.emoji}
+                        />
+                    );
+                })}
             </Flex>
         </Container>
     );

@@ -61,13 +61,24 @@ const ShortSummaryContainer = styled(Flex)`
 type ShortSummaryProps = {
     onShortSummaryClick(reactionId: string): void;
     reactionCount: ReactionCount[];
+    userReactionId: number;
 };
 
-const ShortSummary: VFC<ShortSummaryProps> = ({ onShortSummaryClick, reactionCount }) => {
+const ShortSummary: VFC<ShortSummaryProps> = ({
+    onShortSummaryClick,
+    reactionCount,
+    userReactionId,
+}) => {
     return (
         <>
             {reactionCount.map(({ count, emoji, reactionId }) => (
-                <ShortSummaryContainer key={reactionId} p={[5, 8]} m={[0, 6, 0, 0]} bg="#F4F4F4">
+                <ShortSummaryContainer
+                    className={userReactionId === Number(reactionId) ? 'active' : ''}
+                    key={reactionId}
+                    p={[5, 8]}
+                    m={[0, 6, 0, 0]}
+                    bg="#F4F4F4"
+                >
                     {/* Adding button to support the basic accessibility */}
                     <button onClick={() => onShortSummaryClick(reactionId)}>
                         <EmojiAndCount emoji={emoji} count={count} />
