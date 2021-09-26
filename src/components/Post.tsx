@@ -30,6 +30,11 @@ const PostCard = styled(Flex)`
         color: #6f6f6f;
         font-size: 12px;
     }
+
+    .post-image {
+        width: 500px;
+        height: 300px;
+    }
 `;
 
 /**
@@ -139,7 +144,7 @@ const Post = () => {
                     <span className="posted-time">4:04 PM</span>
                 </Flex>
                 <Flex m={[16, 0, 16, 0]}>
-                    <img src="https://picsum.photos/500/300" alt="Post" />
+                    <img className="post-image" src="https://picsum.photos/500/300" alt="Post" />
                 </Flex>
                 <PostActions
                     onReaction={handleReaction}
