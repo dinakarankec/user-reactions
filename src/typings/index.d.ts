@@ -33,3 +33,7 @@ type ReactionCount = {
     emoji: string;
     count: number;
 };
+
+export type ObjectById<T> = {
+    [key: string]: T;
+};

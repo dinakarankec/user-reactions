@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { useMasterData } from '../contexts/master-data';
 import { Reaction } from '../typings';
-import { reactions } from '../__mock__/mock';
 import { Flex } from './Layout';
 
 const ReactionsEmojisContainer = styled(Flex)`
@@ -93,6 +93,7 @@ type ReactionsEmojisProps = {
 };
 
 const ReactionsEmojis = ({ onReact }: ReactionsEmojisProps) => {
+    const { reactions } = useMasterData();
     return (
         <ReactionsEmojisContainer bg="white" p={[6, 21]} justify="space-between">
             {reactions.map(({ emoji, id, name }: Reaction) => (
@@ -123,6 +124,7 @@ type AddReactionProps = {
 
 const AddReaction = () => {
     const [showEmojis, toggleEmojis] = useState(false);
+
     return (
         <Container>
             <button className="emojis" onClick={() => toggleEmojis(!showEmojis)}>

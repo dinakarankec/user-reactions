@@ -1,9 +1,9 @@
-import PostActions from './components/ContentReactions';
+import Post from './components/Post';
 
 function App() {
     return (
         <div>
-            <PostActions />
+            <Post />
         </div>
     );
 }

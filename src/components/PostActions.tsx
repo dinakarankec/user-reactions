@@ -1,22 +1,27 @@
 import groupBy from 'lodash.groupby';
 import { useMemo, useState, VFC } from 'react';
 import styled from 'styled-components';
-import { Reaction, User, UserContentReaction, UserContentReactionExt } from '../typings';
-import { constructObjectsByIds } from '../utils/common';
+import {
+    ObjectById,
+    Reaction,
+    User,
+    UserContentReaction,
+    UserContentReactionExt,
+} from '../typings';
 import AddReaction from './AddReactions';
 import { Flex } from './Layout';
 import ReactionSummary from './ReactionSummary';
 import ShortSummary from './ShortSummary';
-import { reactions, userContentReactions, users } from '../__mock__/mock';
+import { userContentReactions } from '../__mock__/mock';
 
 const PostActionsContainer = styled(Flex)`
     position: relative;
 `;
 
 const constructUserContentReaction = (
-    reactionsById: { [key: string]: Reaction },
+    reactionsById: ObjectById<Reaction>,
     userContentReactions: UserContentReaction[],
-    usersbyId: { [key: string]: User },
+    usersbyId: ObjectById<User>,
 ) => {
     return userContentReactions.map(
         (userContentReaction): UserContentReactionExt => ({
@@ -29,7 +34,7 @@ const constructUserContentReaction = (
 
 const prepareDataAndTab = (
     userContentReactionsExt: UserContentReactionExt[],
-    reactionsById: { [key: string]: Reaction },
+    reactionsById: ObjectById<Reaction>,
 ) => {
     const groupedByReaction = groupBy(userContentReactionsExt, 'reactionId');
     const reactionCount = Object.keys(groupedByReaction).map((reactionId: string) => {
@@ -47,19 +52,22 @@ const prepareDataAndTab = (
     };
 };
 
-const PostActions: VFC = () => {
+type PostActionsProps = {
+    reactionsById: ObjectById<Reaction>;
+    usersById: ObjectById<User>;
+};
+
+const PostActions: VFC<PostActionsProps> = ({ reactionsById, usersById }) => {
     const [showSummary, toggleSummary] = useState('');
 
     const { groupedByReaction, reactionCount, userContentReactionsExt } = useMemo(() => {
-        const reactionsById = constructObjectsByIds(reactions);
-        const usersbyId = constructObjectsByIds(users);
         const userContentReactionsExt = constructUserContentReaction(
             reactionsById,
             userContentReactions,
-            usersbyId,
+            usersById,
         );
         return prepareDataAndTab(userContentReactionsExt, reactionsById);
-    }, []);
+    }, [reactionsById, usersById]);
 
     return (
         <PostActionsContainer>
